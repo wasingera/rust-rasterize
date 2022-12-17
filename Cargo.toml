@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 glam = "0.22.0"
 sdl2 = "0.35.2"
+tobj = "3.2.3"

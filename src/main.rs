@@ -2,72 +2,36 @@ extern crate sdl2;
 
 use sdl2::{pixels::Color, rect::Point};
 use sdl2::event::Event;
-use sdl2::render::Canvas;
-use sdl2::video::Window;
 
 use glam::{Vec3, vec3};
 
-const CANVAS_WIDTH: i32 = 800;
-const CANVAS_HEIGHT: i32 = 600;
+use tobj::Model;
 
-fn put_pixel(canvas: &mut Canvas<Window>, x: i32, y: i32, color: Vec3) {
-    let x = (CANVAS_WIDTH / 2) + x;
-    let y = (CANVAS_HEIGHT / 2) - y;
-    let color = Color::RGB(color.x as u8, color.y as u8, color.z as u8);
-    let point = Point::new(x, y);
+use crate::rasterize::*;
 
-    canvas.set_draw_color(color);
-    canvas.draw_point(point).unwrap();
-}
+pub const CANVAS_WIDTH: i32 = 800;
+pub const CANVAS_HEIGHT: i32 = 600;
 
-fn draw_line(canvas: &mut Canvas<Window>, p0: Point, p1: Point, color: Vec3) {
-    let line = interpolate_line(p0, p1);
-
-    for point in line {
-        put_pixel(canvas, point.x, point.y, color);
-    }
-}
-
-fn interpolate_line(p0: Point, p1: Point) -> Vec<Point> {
-    // Bresenham's Line Algorithm
-    let mut x0 = p0.x;
-    let mut y0 = p0.y;
-
-    let x1 = p1.x;
-    let y1 = p1.y;
-    let dx = (x1 - x0).abs();
-    let sx = if x0 < x1 { 1 } else { -1 };
-
-    let dy = -(y1 - y0).abs();
-    let sy = if y0 < y1 { 1 } else { -1 };
-
-    let mut error = dx + dy;
+pub mod rasterize;
 
 
-    let mut values: Vec<Point> = Vec::new();
-    loop {
-        values.push(Point::new(x0, y0));
+fn load_obj() -> Vec<Model> {
+    let (models, _materials) =
+        tobj::load_obj(
+            "./objs/triangle.obj",
+            &tobj::LoadOptions::default()
+            )
+        .expect("Failed to OBJ load file");
 
-        if x0 == x1 && y0 == y1 { break }
+    println!("Number of models = {:?}", models.len());
 
-        let e2 = 2 * error;
-        if e2 >= dy {
-            if x0 == x1 { break }
-            error += dy;
-            x0 += sx;
-        }
-
-        if e2 <= dx {
-            if y0 == y1 { break }
-            error += dx;
-            y0 += sy;
-        }
-    }
-
-    values
+    models
 }
 
 fn main() {
+    // load in obj file
+    load_obj();
+
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
 
@@ -80,12 +44,13 @@ fn main() {
 
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
-    let p0 = Point::new(-200, -100);
-    let p1 = Point::new(240, 120);
-    draw_line(&mut canvas, p0, p1, vec3(255.0, 255.0, 255.0));
-    let p0 = Point::new(-50, -200);
-    let p1 = Point::new(60, 240);
-    draw_line(&mut canvas, p0, p1, vec3(255.0, 255.0, 255.0));
+
+    let v0 = Point::new(0, 300);
+    let v1 = Point::new(-150, 0);
+    let v2 = Point::new(150, 0);
+
+    draw_triangle(&mut canvas, v0, v1, v2, vec3(255.0,0.0,0.0));
+    // triangle.draw_outline(&mut canvas);
 
     canvas.present();
 
