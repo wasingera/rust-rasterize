@@ -1,5 +1,4 @@
-use crate::CANVAS_WIDTH;
-use crate::CANVAS_HEIGHT;
+use crate::{CANVAS_WIDTH, CANVAS_HEIGHT, VIEWPORT_HEIGHT, VIEWPORT_WIDTH, PROJ_D};
 
 use sdl2::{pixels::Color, rect::Point};
 use sdl2::render::Canvas;
@@ -19,9 +18,9 @@ pub fn put_pixel(canvas: &mut Canvas<Window>, x: i32, y: i32, color: Vec3) {
 
 #[derive(Debug, Copy, Clone)]
 pub struct Triangle {
-    pub v0: (Vec2, Vec3),
-    pub v1: (Vec2, Vec3),
-    pub v2: (Vec2, Vec3),
+    pub v0: (Vec3, Vec3),
+    pub v1: (Vec3, Vec3),
+    pub v2: (Vec3, Vec3),
 }
 
 impl Triangle {
@@ -29,6 +28,10 @@ impl Triangle {
         let (a, a_color) = self.v0;
         let (b, b_color) = self.v1;
         let (c, c_color) = self.v2;
+
+        let a = project_vertex(a, PROJ_D);
+        let b = project_vertex(b, PROJ_D);
+        let c = project_vertex(c, PROJ_D);
 
         // compute bounding box
         let x_min = a.x.min(b.x).min(c.x) as i32;
@@ -61,7 +64,22 @@ impl Triangle {
     }
 }
 
+fn project_vertex(v: Vec3, d: f32) -> Vec2 {
+    if v.z == 0.0 {
+        println!("Can't project to 0 plane!");
+        return vec2(0.0, 0.0);
+    }
 
+    let x = v.x * d / v.z;
+    let y = v.y * d / v.z;
+    viewport_to_canvas(vec2(x, y))
+}
+
+fn viewport_to_canvas(v: Vec2) -> Vec2 {
+    let height = CANVAS_HEIGHT as f32;
+    let width = CANVAS_WIDTH as f32;
+    return vec2(v.x * width / VIEWPORT_WIDTH, v.y * height / VIEWPORT_HEIGHT);
+}
 
 pub fn draw_line(canvas: &mut Canvas<Window>, p0: Point, p1: Point, color0: Vec3, color1: Vec3) {
     let line = interpolate_line(p0, p1);
