@@ -49,7 +49,8 @@ fn main() {
     let v1 = (vec2(-150.0, 0.0), vec3(0.0, 255.0, 0.0));
     let v2 = (vec2(150.0, 0.0), vec3(0.0, 0.0, 255.0));
 
-    draw_triangle(&mut canvas, v0, v1, v2); 
+    let t = Triangle {v0, v1, v2};
+    t.draw(&mut canvas); 
     // triangle.draw_outline(&mut canvas);
 
     canvas.present();
