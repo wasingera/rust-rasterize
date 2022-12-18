@@ -26,21 +26,16 @@ pub struct Triangle {
 
 impl Triangle {
     pub fn draw(self: &Self, canvas: &mut Canvas<Window>) {
-
         let (a, a_color) = self.v0;
         let (b, b_color) = self.v1;
         let (c, c_color) = self.v2;
 
         // compute bounding box
-        let x_min = a.x.min(b.x);
-        let x_min = x_min.min(c.x) as i32;
-        let y_min = a.y.min(b.y);
-        let y_min = y_min.min(c.y) as i32;
+        let x_min = a.x.min(b.x).min(c.x) as i32;
+        let y_min = a.y.min(b.y).min(c.y) as i32;
 
-        let x_max = a.x.max(b.x);
-        let x_max = x_max.max(c.x) as i32;
-        let y_max = a.y.max(b.y);
-        let y_max = y_max.max(c.y) as i32;
+        let x_max = a.x.max(b.x).max(c.x) as i32;
+        let y_max = a.y.max(b.y).max(c.y) as i32;
 
         let a_total = Self::edge_function(b, c, a);
 
