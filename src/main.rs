@@ -19,7 +19,6 @@ pub const PROJ_D: f32 = 1.0;
 
 pub mod rasterize;
 
-
 fn load_obj() -> Vec<Model> {
     let (models, _materials) =
         tobj::load_obj(
@@ -33,9 +32,44 @@ fn load_obj() -> Vec<Model> {
     models
 }
 
+fn create_triangles(models: Vec<Model>) -> Vec<Triangle> {
+    let mut vertices: Vec<Vec3> = Vec::new();
+    let mut colors: Vec<Vec3> = Vec::new();
+
+    let mut triangles: Vec<Triangle> = Vec::new();
+
+    for model in models.iter() {
+        let mesh = &model.mesh;
+
+        for vtx in 0..mesh.positions.len() / 3 {
+            vertices.push(vec3(
+                mesh.positions[vtx*3],
+                mesh.positions[vtx*3 + 1],
+                mesh.positions[vtx*3 + 2],
+                ));
+            colors.push(vec3(
+                mesh.vertex_color[vtx*3],
+                mesh.vertex_color[vtx*3 + 1],
+                mesh.vertex_color[vtx*3 + 2],
+                ));
+        }
+
+        for i in 0..mesh.indices.len() / 3 {
+            let v0 = (vertices[i], colors[i]);
+            let v1 = (vertices[i+1], colors[i+1]);
+            let v2 = (vertices[i+2], colors[i+2]);
+            triangles.push(Triangle {v0, v1, v2});
+        }
+    }
+
+    triangles
+}
+
 fn main() {
     // load in obj file
-    load_obj();
+    let models = load_obj();
+
+    let triangles = create_triangles(models);
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -50,12 +84,9 @@ fn main() {
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
 
-    let v0 = (vec3(0.0, 1.0, 5.0), vec3(255.0, 0.0, 0.0));
-    let v1 = (vec3(-1.0, 0.0, 5.0), vec3(0.0, 255.0, 0.0));
-    let v2 = (vec3(1.0, 0.0, 5.0), vec3(0.0, 0.0, 255.0));
-
-    let t = Triangle {v0, v1, v2};
-    t.draw(&mut canvas); 
+    for triangle in triangles.iter() {
+        triangle.draw(&mut canvas);
+    }
 
     canvas.present();
 
