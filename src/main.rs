@@ -3,7 +3,7 @@ extern crate sdl2;
 use sdl2::{pixels::Color, rect::Point};
 use sdl2::event::Event;
 
-use glam::{Vec3, vec3};
+use glam::{Vec3, vec3, vec2};
 
 use tobj::Model;
 
@@ -45,11 +45,11 @@ fn main() {
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
 
-    let v0 = Point::new(0, 300);
-    let v1 = Point::new(-150, 0);
-    let v2 = Point::new(150, 0);
+    let v0 = (vec2(0.0, 300.0), vec3(255.0, 0.0, 0.0));
+    let v1 = (vec2(-150.0, 0.0), vec3(0.0, 255.0, 0.0));
+    let v2 = (vec2(150.0, 0.0), vec3(0.0, 0.0, 255.0));
 
-    draw_triangle(&mut canvas, v0, v1, v2, vec3(255.0,0.0,0.0));
+    draw_triangle(&mut canvas, v0, v1, v2); 
     // triangle.draw_outline(&mut canvas);
 
     canvas.present();
