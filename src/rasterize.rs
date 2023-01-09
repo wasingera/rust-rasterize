@@ -25,9 +25,9 @@ pub struct Triangle {
 
 impl Triangle {
     pub fn draw(self: &Self, canvas: &mut Canvas<Window>) {
-        let (a, a_color) = self.v0;
-        let (b, b_color) = self.v1;
-        let (c, c_color) = self.v2;
+        let (mut a, a_color) = self.v0;
+        let (mut b, b_color) = self.v1;
+        let (mut c, c_color) = self.v2;
 
         let a = project_vertex(a, PROJ_D);
         let b = project_vertex(b, PROJ_D);
