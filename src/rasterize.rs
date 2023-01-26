@@ -16,6 +16,19 @@ pub fn put_pixel(canvas: &mut Canvas<Window>, x: i32, y: i32, color: Vec3) {
     canvas.draw_point(point).unwrap();
 }
 
+pub fn put_line(canvas: &mut Canvas<Window>, mut p0: Vec2, mut p1: Vec2) {
+    p0.x = (CANVAS_WIDTH  as f32 / 2.0) + p0.x;
+    p0.y = (CANVAS_HEIGHT as f32 / 2.0) - p0.y;
+    let p0 = Point::new(p0.x as i32, p0.y as i32);
+
+    p1.x = (CANVAS_WIDTH  as f32 / 2.0) + p1.x;
+    p1.y = (CANVAS_HEIGHT as f32 / 2.0) - p1.y;
+    let p1 = Point::new(p1.x as i32, p1.y as i32);
+
+    canvas.set_draw_color(Color::WHITE);
+    canvas.draw_line(p0, p1).unwrap();
+}
+
 #[derive(Debug, Copy, Clone)]
 pub struct Triangle {
     pub v0: (Vec3, Vec3),
@@ -42,8 +55,6 @@ impl Triangle {
 
         let a_total = Self::edge_function(b, c, a);
 
-        println!("xmax: {:?}, yman: {:?}", x_min, y_min);
-
         for x in x_min..=x_max {
             for y in y_min..=y_max {
                 let w_ab = Self::edge_function(a, b, vec2(x as f32, y as f32)) / a_total;
@@ -64,14 +75,22 @@ impl Triangle {
         }
     }
 
-    fn edge_function(a: Vec2, b: Vec2, p: Vec2) -> f32 {
-        (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)
+    pub fn draw_wireframe(self: &Self, canvas: &mut Canvas<Window>, _zbuff: &mut Vec<Vec<f32>>) {
+        let (a_orig, _a_color) = self.v0;
+        let (b_orig, _b_color) = self.v1;
+        let (c_orig, _c_color) = self.v2;
+
+        let a = project_vertex(a_orig, PROJ_D);
+        let b = project_vertex(b_orig, PROJ_D);
+        let c = project_vertex(c_orig, PROJ_D);
+
+        put_line(canvas, a, b);
+        put_line(canvas, b, c);
+        put_line(canvas, c, a);
     }
 
-    fn interpolate_z(z0: f32, z1: f32, l: f32) -> f32 {
-        let inverse_z = (1.0 / z0) * (1.0 - l) + (1.0 / z1) * (1.0 - l);
-
-        1.0 / inverse_z
+    fn edge_function(a: Vec2, b: Vec2, p: Vec2) -> f32 {
+        (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)
     }
 
     fn check_zbuff(x: i32, y: i32, depth: f32, zbuff: &mut Vec<Vec<f32>>) -> bool {

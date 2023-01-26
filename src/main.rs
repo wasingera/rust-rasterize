@@ -43,6 +43,8 @@ fn create_triangles(model: &Model) -> Vec<Triangle> {
 
     let mesh = &model.mesh;
 
+    println!("FACES: {:?}", mesh.indices);
+
     for vtx in 0..mesh.positions.len() / 3 {
         vertices.push(vec3(
             mesh.positions[vtx*3],
@@ -99,7 +101,7 @@ fn main() {
     let mut zbuff = vec!(vec!(1000.0 as f32; CANVAS_WIDTH as usize); CANVAS_HEIGHT as usize);
 
     for object in objects.iter_mut() {
-        let vertex_shader = Mat4::from_translation(vec3(1.0, 0.0, 0.0));
+        let vertex_shader = Mat4::from_translation(vec3(0.0, 0.0, 0.0));
         object.apply_vertex_shader(vertex_shader);
         object.draw(&mut canvas, &mut zbuff);
     }
