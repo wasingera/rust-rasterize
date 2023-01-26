@@ -25,13 +25,13 @@ pub struct Triangle {
 
 impl Triangle {
     pub fn draw(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {
-        let (a, a_color) = self.v0;
-        let (b, b_color) = self.v1;
-        let (c, c_color) = self.v2;
+        let (a_orig, a_color) = self.v0;
+        let (b_orig, b_color) = self.v1;
+        let (c_orig, c_color) = self.v2;
 
-        let a = project_vertex(a, PROJ_D);
-        let b = project_vertex(b, PROJ_D);
-        let c = project_vertex(c, PROJ_D);
+        let a = project_vertex(a_orig, PROJ_D);
+        let b = project_vertex(b_orig, PROJ_D);
+        let c = project_vertex(c_orig, PROJ_D);
 
         // compute bounding box
         let x_min = a.x.min(b.x).min(c.x) as i32;
@@ -54,11 +54,11 @@ impl Triangle {
                 if range.contains(&w_ab) && range.contains(&w_bc) && range.contains(&w_ca) {
                     let color = w_ab * a_color + w_bc * b_color + w_ca * c_color;
 
-                    if Self::check_zbuff(x, y, 1.0, zbuff) {
+                    let z = w_ab * a_orig.z + w_bc * b_orig.z + w_ca * c_orig.z;
+
+                    if Self::check_zbuff(x, y, z, zbuff) {
                         put_pixel(canvas, x, y, color);
                     }
-                } else {
-                    put_pixel(canvas, x, y, vec3(0.0, 0.0, 0.0));
                 }
             }
         }
@@ -66,6 +66,12 @@ impl Triangle {
 
     fn edge_function(a: Vec2, b: Vec2, p: Vec2) -> f32 {
         (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)
+    }
+
+    fn interpolate_z(z0: f32, z1: f32, l: f32) -> f32 {
+        let inverse_z = (1.0 / z0) * (1.0 - l) + (1.0 / z1) * (1.0 - l);
+
+        1.0 / inverse_z
     }
 
     fn check_zbuff(x: i32, y: i32, depth: f32, zbuff: &mut Vec<Vec<f32>>) -> bool {
