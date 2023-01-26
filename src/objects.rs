@@ -10,9 +10,9 @@ pub struct Object {
 }
 
 impl Object {
-    pub fn draw(self: &Self, canvas: &mut Canvas<Window>) {
+    pub fn draw(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {
         for triangle in self.triangles.iter() {
-            triangle.draw(canvas);
+            triangle.draw(canvas, zbuff);
         }
     }
 

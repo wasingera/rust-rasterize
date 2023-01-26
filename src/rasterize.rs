@@ -24,10 +24,10 @@ pub struct Triangle {
 }
 
 impl Triangle {
-    pub fn draw(self: &Self, canvas: &mut Canvas<Window>) {
-        let (mut a, a_color) = self.v0;
-        let (mut b, b_color) = self.v1;
-        let (mut c, c_color) = self.v2;
+    pub fn draw(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {
+        let (a, a_color) = self.v0;
+        let (b, b_color) = self.v1;
+        let (c, c_color) = self.v2;
 
         let a = project_vertex(a, PROJ_D);
         let b = project_vertex(b, PROJ_D);
@@ -42,6 +42,8 @@ impl Triangle {
 
         let a_total = Self::edge_function(b, c, a);
 
+        println!("xmax: {:?}, yman: {:?}", x_min, y_min);
+
         for x in x_min..=x_max {
             for y in y_min..=y_max {
                 let w_ab = Self::edge_function(a, b, vec2(x as f32, y as f32)) / a_total;
@@ -51,7 +53,10 @@ impl Triangle {
                 let range = 0.0..=1.0;
                 if range.contains(&w_ab) && range.contains(&w_bc) && range.contains(&w_ca) {
                     let color = w_ab * a_color + w_bc * b_color + w_ca * c_color;
-                    put_pixel(canvas, x, y, color);
+
+                    if Self::check_zbuff(x, y, 1.0, zbuff) {
+                        put_pixel(canvas, x, y, color);
+                    }
                 } else {
                     put_pixel(canvas, x, y, vec3(0.0, 0.0, 0.0));
                 }
@@ -61,6 +66,23 @@ impl Triangle {
 
     fn edge_function(a: Vec2, b: Vec2, p: Vec2) -> f32 {
         (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)
+    }
+
+    fn check_zbuff(x: i32, y: i32, depth: f32, zbuff: &mut Vec<Vec<f32>>) -> bool {
+        let x = CANVAS_WIDTH / 2 + x;
+        let y = CANVAS_HEIGHT / 2 - y;
+
+        if x >= CANVAS_WIDTH || x < 0 || y >= CANVAS_HEIGHT || y < 0 {
+            return false;
+        }
+
+        let buff_depth = zbuff[y as usize][x as usize];
+
+        if depth <= buff_depth && depth >= PROJ_D {
+            return true;
+        }
+
+        false
     }
 }
 

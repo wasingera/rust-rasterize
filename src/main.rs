@@ -96,10 +96,12 @@ fn main() {
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
 
+    let mut zbuff = vec!(vec!(1000.0 as f32; CANVAS_WIDTH as usize); CANVAS_HEIGHT as usize);
+
     for object in objects.iter_mut() {
         let vertex_shader = Mat4::from_translation(vec3(1.0, 0.0, 0.0));
         object.apply_vertex_shader(vertex_shader);
-        object.draw(&mut canvas);
+        object.draw(&mut canvas, &mut zbuff);
     }
 
     canvas.present();
