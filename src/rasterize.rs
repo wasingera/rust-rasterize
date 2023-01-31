@@ -75,7 +75,7 @@ impl Triangle {
         }
     }
 
-    pub fn draw_wireframe(self: &Self, canvas: &mut Canvas<Window>, _zbuff: &mut Vec<Vec<f32>>) {
+    pub fn draw_wireframe(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {
         let (a_orig, _a_color) = self.v0;
         let (b_orig, _b_color) = self.v1;
         let (c_orig, _c_color) = self.v2;
@@ -83,6 +83,8 @@ impl Triangle {
         let a = project_vertex(a_orig, PROJ_D);
         let b = project_vertex(b_orig, PROJ_D);
         let c = project_vertex(c_orig, PROJ_D);
+
+        self.draw(canvas, zbuff);
 
         put_line(canvas, a, b);
         put_line(canvas, b, c);

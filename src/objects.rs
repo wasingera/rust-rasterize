@@ -22,11 +22,19 @@ impl Object {
         }
     }
 
-    pub fn apply_vertex_shader(self: &mut Self, shader: Mat4) {
-        for triangle in self.triangles.iter_mut() {
-            triangle.v0.0 = shader.transform_point3(triangle.v0.0);
-            triangle.v1.0 = shader.transform_point3(triangle.v1.0);
-            triangle.v2.0 = shader.transform_point3(triangle.v2.0);
+    pub fn apply_vertex_shader(self: &mut Self, shader: Mat4) -> Object {
+        let mut new_triangles: Vec<Triangle> = Vec::new();
+
+        for triangle in self.triangles.iter() {
+            let mut new = Triangle {..*triangle};
+
+            new.v0.0 = shader.transform_point3(triangle.v0.0);
+            new.v1.0 = shader.transform_point3(triangle.v1.0);
+            new.v2.0 = shader.transform_point3(triangle.v2.0);
+
+            new_triangles.push(new);
         }
+
+        Object{triangles: new_triangles}
     }
 }
