@@ -117,6 +117,7 @@ fn main() {
     let mut y_rot = 0.0;
     let mut z_rot = 0.0;
     let rot_speed: f32 = 0.1;
+    let mut zoom: f32 = 10.0;
 
     let mut event_pump = sdl_context.event_pump().unwrap();
     'running: loop {
@@ -130,6 +131,8 @@ fn main() {
                         Keycode::S => x_rot -= rot_speed,
                         Keycode::A => y_rot -= rot_speed,
                         Keycode::D => y_rot += rot_speed,
+                        Keycode::Equals => zoom -= 0.2,
+                        Keycode::Minus => zoom += 0.2,
 
                         _ => {}
                     }
@@ -142,7 +145,7 @@ fn main() {
         canvas.clear();
 
         for object in objects.iter_mut() {
-            let vertex_shader = Mat4::from_translation(vec3(0.0, 0.0, 10.0)) * Mat4::from_rotation_x(x_rot) * Mat4::from_rotation_y(y_rot) * Mat4::from_rotation_z(z_rot);
+            let vertex_shader = Mat4::from_translation(vec3(0.0, 0.0, zoom)) * Mat4::from_rotation_x(x_rot) * Mat4::from_rotation_y(y_rot) * Mat4::from_rotation_z(z_rot);
             let object = object.apply_vertex_shader(vertex_shader);
             // object.draw(&mut canvas, &mut zbuff);
             object.draw_wireframe(&mut canvas, &mut zbuff);
