@@ -5,6 +5,7 @@ use sdl2::render::Canvas;
 
 use glam::*;
 
+#[derive(Debug)]
 pub struct Object {
     pub triangles: Vec<Triangle>
 }
@@ -13,7 +14,9 @@ impl Object {
     pub fn draw(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {
         for triangle in self.triangles.iter() {
             triangle.draw(canvas, zbuff);
+            // println!("Drawing {:?}", triangle);
         }
+        // println!();
     }
 
     pub fn draw_wireframe(self: &Self, canvas: &mut Canvas<Window>, zbuff: &mut Vec<Vec<f32>>) {

@@ -64,15 +64,17 @@ fn create_triangles(model: &Model) -> Vec<Triangle> {
         //     mesh.vertex_color[vtx*3 + 2],
         //     ));
     }
-    println!("INDICES LEN: {:?}", mesh.indices.len());
-    println!("INDICES: {:?}", mesh.indices);
-    println!("VERTICES LEN: {:?}", vertices.len());
-    println!("FACE COUNT: {:?}", mesh.face_arities.len());
+    // println!("INDICES LEN: {:?}", mesh.indices.len());
+    // println!("INDICES: {:?}", mesh.indices);
+    // println!("Vertices: {:?}", vertices);
+    // println!("VERTICES LEN: {:?}", vertices.len());
+    // println!("INDICES LEN: {:?}", mesh.indices.len());
+    // println!("FACE COUNT: {:?}", mesh.face_arities.len());
 
     for i in 0..mesh.indices.len() / 3 {
-        let i0 = mesh.indices[i] as usize;
-        let i1 = mesh.indices[i+1] as usize;
-        let i2 = mesh.indices[i+2] as usize;
+        let i0 = mesh.indices[i*3] as usize;
+        let i1 = mesh.indices[i*3+1] as usize;
+        let i2 = mesh.indices[i*3+2] as usize;
 
         let v0 = (vertices[i0], colors[i0]);
         let v1 = (vertices[i1], colors[i1]);
@@ -96,7 +98,7 @@ fn create_objects(models: Vec<Model>) -> Vec<Object> {
 
 fn main() {
     // load in obj file
-    let models = load_obj("objs/box.obj");
+    let models = load_obj("objs/teapot.obj");
     let mut objects = create_objects(models);
     println!("TOTAL OBJECTS: {:?}", objects.len());
     // let triangles = create_triangles(models);
@@ -129,8 +131,8 @@ fn main() {
                     match keycode {
                         Keycode::W => x_rot += rot_speed,
                         Keycode::S => x_rot -= rot_speed,
-                        Keycode::A => y_rot -= rot_speed,
-                        Keycode::D => y_rot += rot_speed,
+                        Keycode::A => y_rot += rot_speed,
+                        Keycode::D => y_rot -= rot_speed,
                         Keycode::Equals => zoom -= 0.2,
                         Keycode::Minus => zoom += 0.2,
 
