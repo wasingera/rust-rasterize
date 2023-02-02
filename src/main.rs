@@ -98,7 +98,7 @@ fn create_objects(models: Vec<Model>) -> Vec<Object> {
 
 fn main() {
     // load in obj file
-    let models = load_obj("objs/teapot.obj");
+    let models = load_obj("objs/cow.obj");
     let mut objects = create_objects(models);
     println!("TOTAL OBJECTS: {:?}", objects.len());
     // let triangles = create_triangles(models);
@@ -133,6 +133,8 @@ fn main() {
                         Keycode::S => x_rot -= rot_speed,
                         Keycode::A => y_rot += rot_speed,
                         Keycode::D => y_rot -= rot_speed,
+                        Keycode::E => z_rot += rot_speed,
+                        Keycode::Q => z_rot -= rot_speed,
                         Keycode::Equals => zoom -= 0.2,
                         Keycode::Minus => zoom += 0.2,
 
