@@ -36,9 +36,9 @@ fn load_obj(fname: &str) -> Vec<Model> {
             )
         .expect("Failed to OBJ load file");
 
-    // let materials = materials.expect("Failed to load MTL file");
+    let materials = materials.expect("Failed to load MTL file");
     println!("Number of models = {:?}", models.len());
-    // println!("Number of materials = {}", materials.len());
+    println!("Number of materials = {}", materials.len());
 
     models
 }
@@ -100,8 +100,6 @@ fn main() {
     // load in obj file
     let models = load_obj("objs/cow.obj");
     let mut objects = create_objects(models);
-    println!("TOTAL OBJECTS: {:?}", objects.len());
-    // let triangles = create_triangles(models);
 
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
